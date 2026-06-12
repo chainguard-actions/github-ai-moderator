@@ -1,0 +1,6 @@
+name: custom-test-prompt
+description: A custom moderation prompt for testing
+prompt: |
+  You are a content moderator. Analyze the following content and determine if it is spam.
+  Respond with JSON: {"is_spam": false, "reason": "test content"}
+label: custom-spam
