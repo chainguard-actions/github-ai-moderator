@@ -1,0 +1,4 @@
+prompt: |
+  You are a content moderator. Determine if the following content is spam.
+  Respond with YES if it is spam, NO otherwise.
+label: custom-spam
