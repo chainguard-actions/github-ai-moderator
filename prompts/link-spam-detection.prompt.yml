@@ -1,0 +1,77 @@
+messages:
+  - role: system
+    content: |
+      You are a link spam detection system for GitHub issues and comments.
+      Analyze the provided content and determine if it contains suspicious or spam links.
+
+      Consider these link spam indicators:
+      - Multiple unrelated links
+      - Links to promotional websites
+      - Short URL services used to hide destinations (bit.ly, tinyurl, etc.)
+      - Links to cryptocurrency, gambling, or adult content
+      - Links that don't relate to the repository or issue topic
+      - Suspicious domains or newly registered domains
+      - Links to download executables or suspicious files
+
+      Provide your analysis in the specified JSON format.
+  - role: user
+    content: |
+      Analyze this content for link spam:
+
+      {{stdin}}
+model: gpt-4o
+responseFormat: json_schema
+jsonSchema: |-
+  {
+    "name": "link_spam_detection_result",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "properties": {
+        "reasoning": {
+          "type": "string",
+          "description": "Detailed explanation of the analysis, including which link spam indicators were considered and why the conclusion was reached"
+        },
+        "is_spam": {
+          "type": "boolean",
+          "description": "Whether the content contains link spam (true) or legitimate links (false)"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "reasoning",
+        "is_spam"
+      ]
+    }
+  }
+testData:
+  - stdin: >-
+      Check out this amazing deal! Get 50% off crypto trading at
+      bit.ly/cryptodeal and also visit tinyurl.com/easymoney for more
+      opportunities!
+    expected: 'true'
+  - stdin: >-
+      Visit our casino website for guaranteed wins!
+      http://newdomain123.com/casino Download our app at
+      http://suspicious-site.exe/download
+    expected: 'true'
+  - stdin: >-
+      Hey, I found a solution to this issue in the official documentation:
+      https://github.com/owner/repo/wiki/troubleshooting
+    expected: 'false'
+  - stdin: >-
+      You might want to check the Stack Overflow discussion about this:
+      https://stackoverflow.com/questions/12345/similar-issue
+    expected: 'false'
+  - stdin: >-
+      This looks like a bug in the library. See the related issue:
+      https://github.com/library/issues/456
+    expected: 'false'
+  - stdin: >-
+      URGENT! Make money fast with our new system! Visit http://quickmoney.biz
+      and http://earnfast.net for details. Also check bit.ly/fastcash
+    expected: 'true'
+evaluators:
+  - name: is-link-spam
+    string:
+      contains: '{{expected}}'

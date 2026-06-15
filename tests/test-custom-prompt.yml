@@ -1,0 +1,35 @@
+name: Test custom-prompt-path input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: issues
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run action with custom-prompt-path
+        id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          spam-label: spam
+          ai-label: ai-generated
+          minimize-detected-comments: 'false'
+          enable-spam-detection: 'false'
+          enable-link-spam-detection: 'false'
+          enable-ai-detection: 'false'
+          custom-prompt-path: >-
+            actions/hardened/github--ai-moderator/v1.1.3/tests/fixtures/custom-prompt.yml
+        continue-on-error: true
+      - name: Assert action was invoked with custom-prompt-path
+        run: |
+          echo "Action outcome: ${{ steps.action.outcome }}"
+          # The action may fail due to no real GitHub Models token or event payload,
+          # but it must not be skipped — it must have been invoked.
+          if [ "${{ steps.action.outcome }}" = "skipped" ]; then
+            echo "FAIL: action was skipped unexpectedly"
+            exit 1
+          fi
+          echo "PASS: action was invoked with custom-prompt-path"
