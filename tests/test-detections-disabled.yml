@@ -1,0 +1,25 @@
+name: Test with all built-in detections disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run action with all built-in detections disabled
+        id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          spam-label: 'spam'
+          ai-label: 'ai-generated'
+          minimize-detected-comments: 'true'
+          enable-spam-detection: 'false'
+          enable-link-spam-detection: 'false'
+          enable-ai-detection: 'false'
+
+      - name: Assert action completed without failure
+        run: |
+          echo "Action completed successfully with all detections disabled"
+          echo "PASS: action handled all-disabled detection configuration gracefully"
