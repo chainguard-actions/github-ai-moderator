@@ -1,0 +1,19 @@
+name: Test basic usage - graceful exit on unsupported event
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run action under workflow_dispatch (unsupported event)
+        id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+
+      - name: Assert action completed without failure
+        run: |
+          echo "Action completed successfully (exit 0)"
+          echo "PASS: action handled workflow_dispatch event gracefully"

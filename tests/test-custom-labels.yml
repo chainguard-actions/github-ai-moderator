@@ -1,0 +1,21 @@
+name: Test custom label inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run action with custom spam and ai-generated labels
+        id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          spam-label: 'custom-spam'
+          ai-label: 'custom-ai-generated'
+
+      - name: Assert action completed without failure
+        run: |
+          echo "Action accepted custom label inputs and completed successfully"
+          echo "PASS: custom labels accepted without error"

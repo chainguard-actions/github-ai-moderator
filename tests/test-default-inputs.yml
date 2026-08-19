@@ -1,0 +1,21 @@
+name: Test default inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run action with all default inputs
+        id: action
+        uses: .
+        # No inputs specified - all defaults should be used:
+        # token: ${{ github.token }}
+        # spam-label: 'spam'
+        # ai-label: 'ai-generated'
+
+      - name: Assert action completed without failure using defaults
+        run: |
+          echo "Action completed successfully with all default inputs"
+          echo "PASS: default inputs work correctly"
