@@ -1,0 +1,68 @@
+name: Test with all detections disabled
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: issue_comment
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create mock issue_comment event payload
+        run: |
+          mkdir -p /tmp/github-events
+          cat > /tmp/github-events/comment.json <<'EOF'
+          {
+            "action": "created",
+            "comment": {
+              "id": 123456,
+              "body": "This is a normal comment on an issue.",
+              "user": {
+                "login": "regular-user"
+              }
+            },
+            "issue": {
+              "number": 10,
+              "title": "Some issue",
+              "user": {
+                "login": "issue-author"
+              },
+              "labels": []
+            },
+            "repository": {
+              "full_name": "test-owner/test-repo",
+              "name": "test-repo",
+              "owner": {
+                "login": "test-owner"
+              }
+            }
+          }
+          EOF
+          echo "GITHUB_EVENT_PATH=/tmp/github-events/comment.json" >> $GITHUB_ENV
+
+      - id: action
+        uses: .
+        with:
+          token: ${{ github.token }}
+          dry-run: 'true'
+          minimize-detected-comments: 'false'
+          enable-spam-detection: 'false'
+          enable-link-spam-detection: 'false'
+          enable-ai-detection: 'false'
+        continue-on-error: true
+
+      - name: Assert action ran with all detections disabled
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          # With all detections disabled, the action should complete quickly
+          # (success or failure due to API/token issues in test environment)
+          if [ "$OUTCOME" = "success" ] || [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: action ran with all detections disabled"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi

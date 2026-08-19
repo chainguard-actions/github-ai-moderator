@@ -1,4 +1,4 @@
-name: Test custom prompt path input
+name: Test dry-run with all detections disabled
 on:
   workflow_dispatch:
 jobs:
@@ -7,17 +7,16 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run action with custom prompt path specified
+      - name: Run action with all detections disabled
         id: action
         uses: .
         with:
           dry-run: 'true'
-          custom-prompt-path: 'tests/fixtures/custom-prompt.yml'
-          enable-spam-detection: 'true'
-          enable-ai-detection: 'false'
+          enable-spam-detection: 'false'
           enable-link-spam-detection: 'false'
+          enable-ai-detection: 'false'
 
       - name: Assert action completed without failure
         run: |
-          echo "Action completed successfully with custom-prompt-path specified"
+          echo "Action completed successfully with all detections disabled"
           echo "PASS"

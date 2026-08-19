@@ -1,4 +1,4 @@
-name: Test custom prompt path input
+name: Test minimize-detected-comments disabled
 on:
   workflow_dispatch:
 jobs:
@@ -7,17 +7,17 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Run action with custom prompt path specified
+      - name: Run action with comment minimization disabled
         id: action
         uses: .
         with:
           dry-run: 'true'
-          custom-prompt-path: 'tests/fixtures/custom-prompt.yml'
+          minimize-detected-comments: 'false'
           enable-spam-detection: 'true'
-          enable-ai-detection: 'false'
-          enable-link-spam-detection: 'false'
+          enable-link-spam-detection: 'true'
+          enable-ai-detection: 'true'
 
       - name: Assert action completed without failure
         run: |
-          echo "Action completed successfully with custom-prompt-path specified"
+          echo "Action completed successfully with minimize-detected-comments=false"
           echo "PASS"
