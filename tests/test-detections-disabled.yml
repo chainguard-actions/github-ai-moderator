@@ -1,4 +1,4 @@
-name: Test basic usage
+name: Test with all detections disabled
 on:
   workflow_dispatch:
 jobs:
@@ -11,19 +11,16 @@ jobs:
         continue-on-error: true
         with:
           token: ${{ github.token }}
-          spam-label: spam
-          ai-label: ai-generated
-          minimize-detected-comments: 'true'
-          enable-spam-detection: 'true'
-          enable-link-spam-detection: 'true'
-          enable-ai-detection: 'true'
+          enable-spam-detection: 'false'
+          enable-link-spam-detection: 'false'
+          enable-ai-detection: 'false'
       - name: Assert action ran (success or graceful failure on sentinel repo)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
           if [ "$OUTCOME" = "success" ]; then
-            echo "PASS: action succeeded"
+            echo "PASS: action succeeded with all detections disabled"
           elif [ "$OUTCOME" = "failure" ]; then
             echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
           else

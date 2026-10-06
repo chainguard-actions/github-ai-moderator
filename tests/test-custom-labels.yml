@@ -1,4 +1,4 @@
-name: Test basic usage
+name: Test custom label configuration
 on:
   workflow_dispatch:
 jobs:
@@ -11,19 +11,19 @@ jobs:
         continue-on-error: true
         with:
           token: ${{ github.token }}
-          spam-label: spam
-          ai-label: ai-generated
-          minimize-detected-comments: 'true'
+          spam-label: 'custom-spam'
+          ai-label: 'custom-ai-generated'
+          minimize-detected-comments: 'false'
           enable-spam-detection: 'true'
           enable-link-spam-detection: 'true'
           enable-ai-detection: 'true'
-      - name: Assert action ran (success or graceful failure on sentinel repo)
+      - name: Assert action ran with custom labels (success or graceful failure on sentinel repo)
         env:
           OUTCOME: ${{ steps.action.outcome }}
         run: |
           echo "outcome: $OUTCOME"
           if [ "$OUTCOME" = "success" ]; then
-            echo "PASS: action succeeded"
+            echo "PASS: action succeeded with custom labels"
           elif [ "$OUTCOME" = "failure" ]; then
             echo "PASS: action failed gracefully (sentinel repo is not resolvable)"
           else
